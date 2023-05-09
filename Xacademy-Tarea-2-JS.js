@@ -83,53 +83,57 @@ class Carrito {
         console.log(`Agregando ${cantidad} ${sku}`);
 
         // Busco el producto en la "base de datos"
-        const producto = await findProductBySku(sku);
+        try {
+            const producto = await findProductBySku(sku);
 
-        console.log("Producto encontrado", producto);
+            console.log("Producto encontrado", producto);
 
-        // Creo un producto nuevo
-        const nuevoProducto = new ProductoEnCarrito(sku, producto.nombre, cantidad);
-        if (this.productos !== []){
-            const existeProducto = this.productos.find(element => element.sku === sku);
-            if (existeProducto) {
-                existeProducto.cantidad += cantidad;
-                this.precioTotal = this.precioTotal + (producto.precio * cantidad);
+            // Creo un producto nuevo
+            const nuevoProducto = new ProductoEnCarrito(sku, producto.nombre, cantidad);
+            if (this.productos !== []){
+                const existeProducto = this.productos.find(element => element.sku === sku);
+                if (existeProducto) {
+                    existeProducto.cantidad += cantidad;
+                    this.precioTotal = this.precioTotal + (producto.precio * cantidad);
+                }else{
+                    this.productos.push(nuevoProducto);
+                    this.precioTotal = this.precioTotal + (producto.precio * cantidad);
+                    if (!this.categorias.includes(producto.categoria)) {
+                        this.categorias.push(producto.categoria);
+                    }        
+                }
             }else{
                 this.productos.push(nuevoProducto);
                 this.precioTotal = this.precioTotal + (producto.precio * cantidad);
-                if (!this.categorias.includes(producto.categoria)) {
-                    this.categorias.push(producto.categoria);
-                }
-                console.log(this.productos);
-                
-            }
-        }else{
-            this.productos.push(nuevoProducto);
-            this.precioTotal = this.precioTotal + (producto.precio * cantidad);
-            this.categorias.push(producto.categoria);
-            console.log(this.productos);
+                this.categorias.push(producto.categoria);
+            };
+        } catch (error) {
+        console.error(error);
         };
-        
-        
     }
 
     // Elimino cantidades o un producto entero
-    eliminarProducto(sku, cantidad) {
-        
-        return new Promise((resolve, reject) => {
-        
-            const foundProduct = this.productos.find(product => product.sku === sku);
+    async eliminarProducto(sku, cantidad) {
+        console.log(`Eliminando ${cantidad} ${sku}`);
 
-            if (foundProduct) {
-                if (cantidad < foundProduct.cantidad) {
-                    foundProduct.cantidad -= cantidad;
-                    resolve("Se eliminaron " + cantidad + " unidades del producto: "+ foundProduct.nombre);
+        const producto = await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const foundProduct = this.productos.find(product => product.sku === sku);
+                if (foundProduct) {
+                    resolve(foundProduct);
                 } else {
-                    this.productos = this.productos.filter(element => element.sku !== sku);
-                    resolve("Se elimino el producto: " + foundProduct.nombre);
+                    reject(`Product ${sku} not found`);
                 }
-            } else {
-                reject(`Product ${sku} not found`);
+            }, 1500);
+        });
+        
+        return new Promise((resolve) => {
+            if (cantidad < producto.cantidad) {
+                producto.cantidad -= cantidad;
+                resolve(`Se eliminaron ${cantidad} unidades del producto: ${producto.nombre}`);
+            } else if (cantidad => producto.cantidad) {
+                this.productos = this.productos.filter(element => element.sku !== sku);
+                resolve(`Se elimino el producto: ${producto.nombre}`);
             };
         });
     }
@@ -165,14 +169,11 @@ function findProductBySku(sku) {
 
 const carrito = new Carrito();
 carrito.agregarProducto('WE328NJ', 2);
+carrito.agregarProducto('WE328NJ', 2);
 carrito.agregarProducto('PV332MJ', 5);
 
-setTimeout(() => {
-    console.log(carrito)
-    carrito.eliminarProducto('WE328NJ', 3).then( res => console.log(res))
+carrito.eliminarProducto('WE328NJ', 4).then(res => console.log(res))
     .catch(error => {
         console.error(error);
-    })
-    
-    console.log(carrito)
-    }, 2000);
+    });
+
