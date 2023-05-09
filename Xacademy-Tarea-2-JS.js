@@ -115,7 +115,7 @@ class Carrito {
     // Elimino cantidades o un producto entero
     async eliminarProducto(sku, cantidad) {
         console.log(`Eliminando ${cantidad} ${sku}`);
-
+        /*
         const producto = await new Promise((resolve, reject) => {
             setTimeout(() => {
                 const foundProduct = this.productos.find(product => product.sku === sku);
@@ -126,15 +126,21 @@ class Carrito {
                 }
             }, 1500);
         });
-        
-        return new Promise((resolve) => {
+        */
+
+        return new Promise((resolve,reject) => {
+            setTimeout(() => {
+            const producto = this.productos.find(product => product.sku === sku);
             if (cantidad < producto.cantidad) {
                 producto.cantidad -= cantidad;
                 resolve(`Se eliminaron ${cantidad} unidades del producto: ${producto.nombre}`);
             } else if (cantidad => producto.cantidad) {
                 this.productos = this.productos.filter(element => element.sku !== sku);
                 resolve(`Se elimino el producto: ${producto.nombre}`);
-            };
+            } else {
+                    reject(`Product ${sku} not found`);
+                }
+            }, 1500);
         });
     }
 }
