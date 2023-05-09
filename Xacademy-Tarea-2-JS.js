@@ -130,16 +130,19 @@ class Carrito {
 
         return new Promise((resolve,reject) => {
             setTimeout(() => {
-            const producto = this.productos.find(product => product.sku === sku);
-            if (cantidad < producto.cantidad) {
-                producto.cantidad -= cantidad;
-                resolve(`Se eliminaron ${cantidad} unidades del producto: ${producto.nombre}`);
-            } else if (cantidad => producto.cantidad) {
-                this.productos = this.productos.filter(element => element.sku !== sku);
-                resolve(`Se elimino el producto: ${producto.nombre}`);
-            } else {
-                    reject(`Product ${sku} not found`);
-                }
+                const producto = this.productos.find(product => product.sku === sku);
+                if (producto) {
+                    if (cantidad < producto.cantidad) {
+                    producto.cantidad -= cantidad;
+                    resolve(`Se eliminaron ${cantidad} unidades del producto: ${producto.nombre}`);
+                } else if (cantidad => producto.cantidad) {
+                    this.productos = this.productos.filter(element => element.sku !== sku);
+                    resolve(`Se elimino el producto: ${producto.nombre}`);
+                    }
+            
+                } else {
+                        reject(`Product ${sku} not found`);
+                    }
             }, 1500);
         });
     }
@@ -178,7 +181,7 @@ carrito.agregarProducto('WE328NJ', 2);
 carrito.agregarProducto('WE328NJ', 2);
 carrito.agregarProducto('PV332MJ', 5);
 
-carrito.eliminarProducto('WE328NJ', 4).then(res => console.log(res))
+carrito.eliminarProducto('PV332MJ', 6).then(res => console.log(res))
     .catch(error => {
         console.error(error);
     });
