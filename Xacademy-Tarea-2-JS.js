@@ -115,22 +115,23 @@ class Carrito {
 
     // Elimino cantidades o un producto entero
     eliminarProducto(sku, cantidad) {
+        
         return new Promise((resolve, reject) => {
         
-        const foundProduct = this.productos.find(product => product.sku === sku);
+            const foundProduct = this.productos.find(product => product.sku === sku);
+
             if (foundProduct) {
                 if (cantidad < foundProduct.cantidad) {
-                    foundProduct.cantidad - cantidad;
-                    resolve();
+                    foundProduct.cantidad -= cantidad;
+                    resolve("Se eliminaron " + cantidad + " unidades del producto: "+ foundProduct.nombre);
                 } else {
-                    this.productos.delete(foundProduct);
-                    resolve()
+                    this.productos = this.productos.filter(element => element.sku !== sku);
+                    resolve("Se elimino el producto: " + foundProduct.nombre);
                 }
-            resolve(foundProduct);
-        } else {
-            reject(`Product ${sku} not found`);
-        };
-    });
+            } else {
+                reject(`Product ${sku} not found`);
+            };
+        });
     }
 }
 
@@ -164,9 +165,14 @@ function findProductBySku(sku) {
 
 const carrito = new Carrito();
 carrito.agregarProducto('WE328NJ', 2);
-carrito.agregarProducto('WE328NJ', 2);
-carrito.agregarProducto('PV332MJ', 3);
 carrito.agregarProducto('PV332MJ', 5);
+
 setTimeout(() => {
-            console.log(carrito)
-        }, 2000);
+    console.log(carrito)
+    carrito.eliminarProducto('WE328NJ', 3).then( res => console.log(res))
+    .catch(error => {
+        console.error(error);
+    })
+    
+    console.log(carrito)
+    }, 2000);
