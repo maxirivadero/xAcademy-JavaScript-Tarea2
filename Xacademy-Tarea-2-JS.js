@@ -135,14 +135,14 @@ class Carrito {
                     if (cantidad < producto.cantidad) {
                     producto.cantidad -= cantidad;
                     resolve(`Se eliminaron ${cantidad} unidades del producto: ${producto.nombre}`);
-                } else if (cantidad => producto.cantidad) {
+                    } else {
                     this.productos = this.productos.filter(element => element.sku !== sku);
                     resolve(`Se elimino el producto: ${producto.nombre}`);
                     }
             
                 } else {
                         reject(`Product ${sku} not found`);
-                    }
+                }
             }, 1500);
         });
     }
